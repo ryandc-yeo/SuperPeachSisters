@@ -4,18 +4,25 @@
 #include "GameWorld.h"
 #include "Level.h"
 #include <string>
+#include <vector>
 
-// Students:  Add code to this file, StudentWorld.cpp, Actor.h, and Actor.cpp
+class Actor;
+class Peach;
 
 class StudentWorld : public GameWorld
 {
 public:
-  StudentWorld(std::string assetPath);
-  virtual int init();
-  virtual int move();
-  virtual void cleanUp();
+	StudentWorld(std::string assetPath);
+	~StudentWorld() { cleanUp(); }
 
+	virtual int init();
+	virtual int move();
+	virtual void cleanUp();
+
+	bool isObject(int x, int y);
 private:
+	Peach* peach;
+	std::vector<Actor*> actor;
 };
 
 #endif // STUDENTWORLD_H_
