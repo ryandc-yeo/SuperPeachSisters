@@ -30,13 +30,17 @@ void Peach::doSomething()
 	if (m_rechargeTime > 0)
 		m_rechargeTime--;
 
+	// if recharge == 0 and shootPower, Peach may shoot a fireball
+
 	// Check if Peach overlaps with any other game objects
-	if (getWorld()->isObject(getX(), getY()))
+	/*
+	if (!getWorld()->isPeachMovePossible())
 	{
-		// bonk()
+		bonk();
 	}
+	*/
 
-
+	// how to deal with immovable
 
 	// Peach movement
 	int ch;
@@ -46,21 +50,21 @@ void Peach::doSomething()
 		{
 		case KEY_PRESS_UP:
 		{
-			if (!getWorld()->isObject(getX(), getY() + 4))
+			if (getWorld()->isPeachMovePossible(getX(), getY() + 4))
 				moveTo(getX(), getY() + 4);
 			break;
 		}
 		case KEY_PRESS_LEFT:
 		{
 			setDirection(180);
-			if (!getWorld()->isObject(getX() - 4, getY()))
+			if (getWorld()->isPeachMovePossible(getX() - 4, getY())) // not correct, need to include immovable
 				moveTo(getX() - 4, getY());
 			break;
 		}
 		case KEY_PRESS_RIGHT:
 		{
 			setDirection(0);
-			if (!getWorld()->isObject(getX() + SPRITE_WIDTH + 4, getY()))
+			if (getWorld()->isPeachMovePossible(getX() + 4, getY()))
 				moveTo(getX() + 4, getY());
 			break;
 		}

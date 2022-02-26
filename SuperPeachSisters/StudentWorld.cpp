@@ -58,7 +58,7 @@ int StudentWorld::init()
 				}
 				case Level::pipe:
 				{
-					actor.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT - 1, this));
+					actor.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
 					break;
 				}
 				case Level::flag:
@@ -106,18 +106,72 @@ void StudentWorld::cleanUp()
 	actor.clear();
 }
 
-bool StudentWorld::isObject(int x, int y)
+// If a can move to (destx,destx), return true (but don't move it); otherwise (it would be blocked), return false
+bool StudentWorld::isMovePossible(Actor* a, int x, int y)
 {
-	int size = actor.size();
+	return true;
+}
 
-	for (int i = 0; i < size; i++)
+
+
+// If Peach overlaps bonker, bonk 'er and return true; otherwise, return false
+bool StudentWorld::bonkOverlappingPeach(Actor* bonker) const
+{
+	if (overlapsPeach(bonker))
 	{
-		if (x > actor[i]->getX() && x < (actor[i]->getX() + SPRITE_WIDTH - 1))
+		peach->bonk();
+		return true;
+	}
+	else
+		return false;
+}
+
+// Return true if a overlaps Peach; otherwise, return false
+bool StudentWorld::overlapsPeach(Actor* a) const
+{
+	double distanceX = a->getX() - peach->getX();
+	double distanceY = a->getY() - peach->getY();
+
+	if (distanceX < (SPRITE_WIDTH - 1) && distanceX > -(SPRITE_WIDTH + 1))
+	{
+		if (distanceY < (SPRITE_HEIGHT - 1) && distanceY > -(SPRITE_HEIGHT + 1))
 		{
-			if (y >= actor[i]->getY() && y < (actor[i]->getY() + SPRITE_HEIGHT - 1))
-				return true;
+			return true;
 		}
 	}
+
+	return false;
+}
+
+// Return false if Peach's intended position is occupied 
+bool StudentWorld::isPeachMovePossible(int x, int y)
+{
+	for (int i = 0; i < actor.size(); i++)
+	{
+		/**/
+		double distanceX = actor[i]->getX() - x;
+		double distanceY = actor[i]->getY() - y;
+
+		if (-(SPRITE_WIDTH - 1) <= distanceX && distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_HEIGHT - 1) <= distanceY && distanceY <= (SPRITE_HEIGHT - 1))
+		{
+			return false;	// might have to do another check if the object is passable or not
+		}
+
+		//if (moveOrBonk(actor[i], x, y))
+			//return true;
+	}
+
+	return true;
+}
+
+// If a can move to (destx,desty), move it and return true; otherwise bonk the object that's blocking it and return false
+bool StudentWorld::moveOrBonk(Actor* a, int x, int y)
+{
+	double distanceX = a->getX() - x;
+	double distanceY = a->getY() - y;
+
+	if (distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_WIDTH + 4) <= distanceX && distanceY <= (SPRITE_HEIGHT - 1) && -(SPRITE_HEIGHT + 1) <= distanceY)
+		return true;
 
 	return false;
 }

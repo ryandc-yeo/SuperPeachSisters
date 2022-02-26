@@ -73,7 +73,7 @@ public:
 		: Actor(IID_PEACH, x, y, world, 0, 0, 1.0), m_invincibleCount(0), m_rechargeTime(0), m_invincible(false), m_tempInvincible(false), m_shootP(false), m_jumpP(false) {}
 
 	virtual void doSomething();
-	virtual void bonk() {}
+	virtual void bonk() { std::cerr << "bonk" << std::endl; }
 
 	void setInvincibility(int ticks) { m_invincibleCount = ticks;  }
 	void setHP(int hp) {}
