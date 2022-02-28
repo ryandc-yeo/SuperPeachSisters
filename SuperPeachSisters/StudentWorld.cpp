@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "GameConstants.h"
 #include <string>
+#include <sstream>
 using namespace std;
 
 GameWorld* createStudentWorld(string assetPath)
@@ -14,6 +15,9 @@ GameWorld* createStudentWorld(string assetPath)
 StudentWorld::StudentWorld(string assetPath)
 : GameWorld(assetPath)
 {
+	m_peach = nullptr;
+	m_nextLevel = false;
+	m_win = false;
 }
 
 int StudentWorld::init()
@@ -42,123 +46,217 @@ int StudentWorld::init()
 			{
 				Level::GridEntry ge;
 				ge = lev.getContentsOf(i, j);
-				switch (ge)
-				{
-				case Level::empty:
-					break;
-				case Level::peach:
-				{
-					peach = new Peach(i*SPRITE_WIDTH, j*SPRITE_HEIGHT, this);
-					break;
-				}
-				case Level::block:
-				{
-					actor.push_back(new Block(i* SPRITE_WIDTH, j* SPRITE_HEIGHT, this));
-					break;
-				}
-				case Level::pipe:
-				{
-					actor.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
-					break;
-				}
-				case Level::flag:
-				{
-					actor.push_back(new Goal(IID_FLAG, i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
-					break;
-				}
-				case Level::mario:
-				{
-					actor.push_back(new Goal(IID_MARIO, i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
-					break;
-				}
-				}
+				addActor(ge, i, j);
 			}
 		}
 	}
-
+	gameStat();
 	return GWSTATUS_CONTINUE_GAME;
 }
 
 int StudentWorld::move()
 {
-	if (peach->isAlive())
+	if (m_peach->isAlive())
 	{
-		peach->doSomething();
-
-		if (!peach->isAlive())
+		m_peach->doSomething();
+		
+		for (int i = 0; i < m_actor.size(); i++)
 		{
-			// play dying sound
-			playSound(SOUND_PLAYER_DIE); // check if works
+			if (m_actor[i]->isAlive())
+				m_actor[i]->doSomething();
+			else
+			{
+				delete m_actor[i];
+				m_actor.erase(m_actor.begin() + i);
+			}
+		}
+		
+
+		if (!m_peach->isAlive())
+		{
+			decLives();
+			playSound(SOUND_PLAYER_DIE);
 			return GWSTATUS_PLAYER_DIED;
 		}
-	}
 
+		if (m_nextLevel)
+		{
+			m_nextLevel = false;
+			playSound(SOUND_FINISHED_LEVEL);
+			return GWSTATUS_FINISHED_LEVEL;
+		}
+
+		if (m_win)
+		{
+			playSound(SOUND_GAME_OVER);
+			return GWSTATUS_PLAYER_WON;
+		}
+	}
+	gameStat();
 	return GWSTATUS_CONTINUE_GAME;
 }
 
 void StudentWorld::cleanUp()
 {
-	delete peach;
+	delete m_peach;
 
-	for (int i = 0; i < actor.size(); i++)
-		delete actor[i];
+	for (int i = 0; i < m_actor.size(); i++)
+		delete m_actor[i];
 
-	actor.clear();
+	m_actor.clear();
 }
 
-// If a can move to (destx,destx), return true (but don't move it); otherwise (it would be blocked), return false
-bool StudentWorld::isMovePossible(Actor* a, int x, int y)
+void StudentWorld::gameStat()
 {
-	return true;
+	ostringstream stringStream;
+	stringStream.setf(ios::fixed);
+	stringStream.precision(2);
+	string text = "";
+
+	if (m_peach->hasShootPower())
+		text += "ShootPower! ";
+	if (m_peach->hasJumpPower())
+		text += "JumpPower! ";
+	if (m_peach->isInvincible())
+		text += "StarPower! ";
+
+	stringStream << "Lives: " << getLives() << "  Level: " << getLevel() << "  Points: " << getScore() << "  " << text;
+	string gameStatOutput = stringStream.str();
+
+	setGameStatText(gameStatOutput);
 }
 
-
-
-// If Peach overlaps bonker, bonk 'er and return true; otherwise, return false
-bool StudentWorld::bonkOverlappingPeach(Actor* bonker) const
+void StudentWorld::addActor(Level::GridEntry ge, int i, int j) 
 {
-	if (overlapsPeach(bonker))
+	switch (ge)
 	{
-		peach->bonk();
-		return true;
+	case Level::empty:
+		break;
+	case Level::peach:
+	{
+		m_peach = new Peach(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this);
+		break;
 	}
-	else
-		return false;
+	case Level::block:
+	{
+		m_actor.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+		break;
+	}
+	case Level::mushroom_goodie_block:
+	{
+		m_actor.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, 0));
+		break;
+	}
+	case Level::flower_goodie_block:
+	{
+		m_actor.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, 1));
+		break;
+	}
+	case Level::star_goodie_block:
+	{
+		m_actor.push_back(new Block(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, 2));
+		break;
+	}
+	case Level::pipe:
+	{
+		m_actor.push_back(new Pipe(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+		break;
+	}
+	case Level::flag:
+	{
+		m_actor.push_back(new Goal(IID_FLAG, i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, false));
+		break;
+	}
+	case Level::mario:
+	{
+		m_actor.push_back(new Goal(IID_MARIO, i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, true));
+		break;
+	}
+	}
+}
+
+void StudentWorld::addObject(int object, int x, int y)
+{
+	switch (object)
+	{
+	case 0:
+	{
+		m_actor.push_back(new Mushroom(x, y, this));
+		break;
+	}
+	case 1:
+	{
+		m_actor.push_back(new Flower(x, y, this));
+		break;
+	}
+	case 2:
+	{
+		m_actor.push_back(new Star(x, y, this));
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 // Return true if a overlaps Peach; otherwise, return false
 bool StudentWorld::overlapsPeach(Actor* a) const
 {
-	double distanceX = a->getX() - peach->getX();
-	double distanceY = a->getY() - peach->getY();
+	double distanceX = a->getX() - m_peach->getX();
+	double distanceY = a->getY() - m_peach->getY();
 
-	if (distanceX < (SPRITE_WIDTH - 1) && distanceX > -(SPRITE_WIDTH + 1))
+	if (-(SPRITE_WIDTH - 1) <= distanceX && distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_HEIGHT - 1) <= distanceY && distanceY <= (SPRITE_HEIGHT - 1))
 	{
-		if (distanceY < (SPRITE_HEIGHT - 1) && distanceY > -(SPRITE_HEIGHT + 1))
-		{
-			return true;
-		}
+		return true;
 	}
 
 	return false;
 }
 
-// Return false if Peach's intended position is occupied 
-bool StudentWorld::isPeachMovePossible(int x, int y)
+bool StudentWorld::overlapsAt(Actor* a, double x, double y) const
 {
-	for (int i = 0; i < actor.size(); i++)
+	double distanceX = a->getX() - x;
+	double distanceY = a->getY() - y;
+
+	if (-(SPRITE_WIDTH - 1) <= distanceX && distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_HEIGHT - 1) <= distanceY && distanceY <= (SPRITE_HEIGHT - 1))
 	{
-		/**/
-		double distanceX = actor[i]->getX() - x;
-		double distanceY = actor[i]->getY() - y;
+		return true;
+	}
+
+	return false;
+}
+
+// If a can move to (destx,destx), return true (but don't move it); otherwise (it would be blocked), return false
+bool StudentWorld::isMovePossible(Actor* a, int x, int y)
+{
+	for (int i = 0; i < m_actor.size(); i++)
+	{
+		double distanceX = m_actor[i]->getX() - x;
+		double distanceY = m_actor[i]->getY() - y;
 
 		if (-(SPRITE_WIDTH - 1) <= distanceX && distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_HEIGHT - 1) <= distanceY && distanceY <= (SPRITE_HEIGHT - 1))
 		{
-			return false;	// might have to do another check if the object is passable or not
+			if (m_actor[i]->blocksMovement())	// Checks if actor is an obstacle
+				return false;
 		}
+	}
 
-		//if (moveOrBonk(actor[i], x, y))
-			//return true;
+	return true;
+}
+
+// Return false if Peach's intended position is occupied 
+bool StudentWorld::isPeachMovePossible(int x, int y)
+{
+	for (int i = 0; i < m_actor.size(); i++)
+	{
+		double distanceX = m_actor[i]->getX() - x;
+		double distanceY = m_actor[i]->getY() - y;
+
+		if (-(SPRITE_WIDTH - 1) <= distanceX && distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_HEIGHT - 1) <= distanceY && distanceY <= (SPRITE_HEIGHT - 1))
+		{
+			if (m_actor[i]->blocksMovement())	// Checks if actor is an obstacle
+				return false;
+		}
 	}
 
 	return true;
@@ -171,7 +269,47 @@ bool StudentWorld::moveOrBonk(Actor* a, int x, int y)
 	double distanceY = a->getY() - y;
 
 	if (distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_WIDTH + 4) <= distanceX && distanceY <= (SPRITE_HEIGHT - 1) && -(SPRITE_HEIGHT + 1) <= distanceY)
+	{
+		a->moveTo(x, y);
 		return true;
+	}
+	else
+	{
+		bonkObject(x, y);
+		return false;
+	}
+}
 
-	return false;
+void StudentWorld::bonkObject(double x, double y)
+{
+	for (int i = 0; i < m_actor.size(); i++)
+	{
+		if (overlapsAt(m_actor[i], x, y))
+			m_actor[i]->bonk(false);
+	}
+}
+
+void StudentWorld::grantShootPower() const
+{
+	m_peach->giveShootPower();
+}
+
+void StudentWorld::grantJumpPower() const
+{
+	m_peach->giveJumpPower();
+}
+
+void StudentWorld::grantInvincibility(int ticks) const 
+{
+	m_peach->setInvincibility(ticks);
+}
+
+void StudentWorld::setPeachHP(int hp) const
+{
+	m_peach->setHealth(hp);
+}
+
+void StudentWorld::damagePeach()
+{
+	m_peach->damaged();
 }

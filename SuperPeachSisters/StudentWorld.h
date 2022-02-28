@@ -19,26 +19,33 @@ public:
 	virtual int move();
 	virtual void cleanUp();
 
-	bool isMovePossible(Actor* a, int x, int y);
+	void gameStat();
+
+	void addActor(Level::GridEntry ge, int i, int j);
+	void addObject(int object, int x, int y);
 	bool moveIfPossible(Actor* a, int x, int y) {}
-	void addActor(Actor* a) {}
 	void endLevel(bool isGameWon) {}
 	bool moveOrBonk(Actor* a, int x, int y);
-	bool bonkOverlappingPeach(Actor* bonker) const;
-	void bonkOverlappingActor(Actor* bonker) const {}
-	bool damageOverlappingPeach(Actor* damager) const {}
-	bool damageOverlappingActor(Actor* damager) const {}
+	void bonkObject(double x, double y);
+
 	bool overlapsPeach(Actor* a) const;
-	bool getPeachTargetingInfo(Actor* a, int yDetlaLimit, int& xDeltaFromActor) const {}
-	void setPeachHP(int hp) const {}
-	void grantInvincibility(int ticks) const {}
-	void grantShootPower() const {}
-	void grantJumpPower() const {}
+	bool overlapsAt(Actor* a, double x, double y) const;
+
+	void reachedFlag() { m_nextLevel = true; }
+	void reachedMario() { m_win = true; }
+	void grantShootPower() const;
+	void grantJumpPower() const;
+	void grantInvincibility(int ticks) const;
+	void setPeachHP(int hp) const;
+	void damagePeach();
 
 	bool isPeachMovePossible(int x, int y);
+	bool isMovePossible(Actor* a, int x, int y);
 private:
-	Peach* peach;
-	std::vector<Actor*> actor;
+	Peach* m_peach;
+	std::vector<Actor*> m_actor;
+	bool m_nextLevel;
+	bool m_win;
 };
 
 #endif // STUDENTWORLD_H_
