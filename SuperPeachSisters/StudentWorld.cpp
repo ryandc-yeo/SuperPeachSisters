@@ -172,10 +172,25 @@ void StudentWorld::addActor(Level::GridEntry ge, int i, int j)
 		m_actor.push_back(new Goal(IID_MARIO, i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this, true));
 		break;
 	}
+	case Level::goomba:
+	{
+		m_actor.push_back(new Goomba(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+		break;
+	}
+	case Level::koopa:
+	{
+		m_actor.push_back(new Koopa(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+		break;
+	}
+	case Level::piranha:
+	{
+		m_actor.push_back(new Piranha(i * SPRITE_WIDTH, j * SPRITE_HEIGHT, this));
+		break;
+	}
 	}
 }
 
-void StudentWorld::addObject(int object, int x, int y)
+void StudentWorld::addObject(int object, int x, int y, int dir)
 {
 	switch (object)
 	{
@@ -192,6 +207,16 @@ void StudentWorld::addObject(int object, int x, int y)
 	case 2:
 	{
 		m_actor.push_back(new Star(x, y, this));
+		break;
+	}
+	case 3:
+	{
+		m_actor.push_back(new PiranhaFireball(x, y, this, dir));
+		break;
+	}
+	case 4:
+	{
+		m_actor.push_back(new PeachFireball(x, y, this, dir));
 		break;
 	}
 	default:
@@ -236,12 +261,32 @@ bool StudentWorld::isMovePossible(Actor* a, int x, int y)
 
 		if (-(SPRITE_WIDTH - 1) <= distanceX && distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_HEIGHT - 1) <= distanceY && distanceY <= (SPRITE_HEIGHT - 1))
 		{
-			if (m_actor[i]->blocksMovement())	// Checks if actor is an obstacle
+			if (m_actor[i]->blocksMovement())	// Checks if actor is a passable obstacle
 				return false;
 		}
 	}
 
 	return true;
+}
+
+bool StudentWorld::damageIfPossible(Actor* a, int x, int y)
+{
+	for (int i = 0; i < m_actor.size(); i++)
+	{
+		double distanceX = m_actor[i]->getX() - x;
+		double distanceY = m_actor[i]->getY() - y;
+
+		if (-(SPRITE_WIDTH - 1) <= distanceX && distanceX <= (SPRITE_WIDTH - 1) && -(SPRITE_HEIGHT - 1) <= distanceY && distanceY <= (SPRITE_HEIGHT - 1))
+		{
+			if (m_actor[i]->canBeDamaged())	// Checks if actor is a damageable object
+			{
+				damageObject(m_actor[i]);
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 // Return false if Peach's intended position is occupied 
@@ -311,5 +356,10 @@ void StudentWorld::setPeachHP(int hp) const
 
 void StudentWorld::damagePeach()
 {
-	m_peach->damaged();
+	m_peach->damage();
+}
+
+void StudentWorld::damageObject(Actor* a)
+{
+	a->damage();
 }

@@ -1,25 +1,8 @@
-﻿  Actor.cpp
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(43,42): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(43,39): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(58,42): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(58,39): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(127,56): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(127,45): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(140,56): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(140,47): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(147,56): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(147,47): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(175,52): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(175,41): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(198,48): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(198,43): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(205,48): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(205,43): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(211,45): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(211,40): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(252,8): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(253,8): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(286,8): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(287,8): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\Actor.cpp(62): warning C4715: 'Peach::isJumping': not all control paths return a value
+﻿  StudentWorld.cpp
+C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\StudentWorld.cpp(63,21): warning C4018: '<': signed/unsigned mismatch
+C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\StudentWorld.cpp(103,20): warning C4018: '<': signed/unsigned mismatch
+C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\StudentWorld.cpp(257,20): warning C4018: '<': signed/unsigned mismatch
+C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\StudentWorld.cpp(274,20): warning C4018: '<': signed/unsigned mismatch
+C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\StudentWorld.cpp(295,20): warning C4018: '<': signed/unsigned mismatch
+C:\Dev\CS 32\Project3\SuperPeachSisters\SuperPeachSisters\StudentWorld.cpp(330,20): warning C4018: '<': signed/unsigned mismatch
   SuperPeachSisters.vcxproj -> C:\Dev\CS 32\Project3\SuperPeachSisters\Debug\SuperPeachSisters.exe

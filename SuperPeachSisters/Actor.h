@@ -14,8 +14,9 @@ public:
 
 	virtual void doSomething() {};
 	virtual void bonk(bool isPeachInvincible) {};
-	virtual void damaged() { m_health--; }
+	virtual void damage();
 	virtual bool blocksMovement() const { return false; }
+	virtual bool canBeDamaged() const { return false; }
 
 	StudentWorld* getWorld() { return m_world; }
 	void setDead() { m_alive = false; }
@@ -65,13 +66,20 @@ class Projectile : public Actor
 public:
 	Projectile(int imageID, int x, int y, StudentWorld* world, int dir)
 		: Actor(imageID, x, y, world, dir, 1, 1.0) {}
+
+	virtual void doSomething() {}
 };
-/*
+
 class Enemy : public Actor
 {
+public:
+	Enemy(int imageID, int x, int y, StudentWorld* world)
+		: Actor(imageID, x, y, world, 0, 1, 1.0) {}
 
+	virtual void doSomething() {}
+	virtual bool canBeDamaged() const { return false; }
 };
-*/
+
 
 // Actor classes
 class Peach : public Actor
@@ -80,6 +88,7 @@ public:
 	Peach(int x, int y, StudentWorld* world);
 
 	virtual void doSomething();
+	virtual bool canBeDamaged() const { return true; }
 	virtual void bonk() { std::cerr << "bonk" << std::endl; }
 
 	void setInvincibility(int ticks);
@@ -166,6 +175,7 @@ public:
 
 class PiranhaFireball : public Projectile
 {
+public:
 	PiranhaFireball(int x, int y, StudentWorld* world, int dir)
 		: Projectile(IID_PIRANHA_FIRE, x, y, world, dir) {}
 
@@ -174,28 +184,40 @@ class PiranhaFireball : public Projectile
 
 class PeachFireball : public Projectile
 {
+public:
 	PeachFireball(int x, int y, StudentWorld* world, int dir)
 		: Projectile(IID_PEACH_FIRE, x, y, world, dir) {}
 
 	virtual void doSomething();
 };
 
+class Goomba : public Enemy
+{
+public:
+	Goomba(int x, int y, StudentWorld* world)
+		: Enemy(IID_GOOMBA, x, y, world) {}
+
+	virtual void doSomething();
+};
+
+class Koopa : public Enemy
+{
+public:
+	Koopa(int x, int y, StudentWorld* world)
+		: Enemy(IID_KOOPA, x, y, world) {}
+
+	virtual void doSomething() {}
+};
+
+class Piranha : public Enemy
+{
+public:
+	Piranha(int x, int y, StudentWorld* world)
+		: Enemy(IID_PIRANHA, x, y, world) {}
+
+	virtual void doSomething() {}
+};
 /*
-class Goomba : public Character
-{
-
-};
-
-class Koopa : public Character
-{
-
-};
-
-class Piranha : public Character
-{
-
-};
-
 class Shell : public Projectile
 {
 

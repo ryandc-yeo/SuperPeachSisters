@@ -22,9 +22,7 @@ public:
 	void gameStat();
 
 	void addActor(Level::GridEntry ge, int i, int j);
-	void addObject(int object, int x, int y);
-	bool moveIfPossible(Actor* a, int x, int y) {}
-	void endLevel(bool isGameWon) {}
+	void addObject(int object, int x, int y, int dir);
 	bool moveOrBonk(Actor* a, int x, int y);
 	void bonkObject(double x, double y);
 
@@ -38,9 +36,11 @@ public:
 	void grantInvincibility(int ticks) const;
 	void setPeachHP(int hp) const;
 	void damagePeach();
+	void damageObject(Actor* a);
 
 	bool isPeachMovePossible(int x, int y);
 	bool isMovePossible(Actor* a, int x, int y);
+	bool damageIfPossible(Actor* a, int x, int y);
 private:
 	Peach* m_peach;
 	std::vector<Actor*> m_actor;

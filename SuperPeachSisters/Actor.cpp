@@ -4,6 +4,12 @@
 Actor::Actor(int imageID, int x, int y, StudentWorld* world, int dir = 0, int depth = 0, double size = 1.0)
 	: m_alive(true), m_health(1), m_world(world), GraphObject(imageID, x, y, dir, depth, size) {}
 
+void Actor::damage()
+{
+	if (canBeDamaged())
+		m_health--;
+}
+
 void Goal::doSomething()
 {
 	if (!isAlive())
@@ -81,7 +87,8 @@ void Peach::setTempInvincibility(int ticks)
 
 void Peach::shoot()
 {
-	getWorld()->
+	std::cerr << "shoot" << std::endl;
+	//getWorld()->
 }
 
 void Peach::doSomething()
@@ -160,9 +167,7 @@ void Peach::doSomething()
 				getWorld()->playSound(SOUND_PLAYER_FIRE);
 				m_rechargeTime = 8;
 				m_canShoot = false;
-				//if (getDirection() == 0)
-					// shoot fireball
-
+				getWorld()->addObject(4, getX(), getY(), getDirection());
 			}
 		}
 		default:
@@ -178,7 +183,7 @@ void Block::bonk(bool isPeachInvincible)
 	else
 	{
 		getWorld()->playSound(SOUND_POWERUP_APPEARS);
-		getWorld()->addGoodie(m_goodieNo, getX(), getY() + 8);
+		getWorld()->addObject(m_goodieNo, getX(), getY() + 8, 0);
 		m_goodieNo = -1;
 		m_goodieBlock = false;
 	}
@@ -292,31 +297,34 @@ void PeachFireball::doSomething()
 	int x = getX();
 	int y = getY();
 
-	if (getWorld()->overlapsPeach(this))
+	if (getWorld()->damageIfPossible(this, x, y))
 	{
-		getWorld()->damagePeach();
 		setDead();
+		return;
 	}
-	else
+	
+	if (getDirection() == 180)
 	{
-		if (getDirection() == 180)
-		{
-			if (getWorld()->isMovePossible(this, x - 2, y))
-				moveTo(x - 2.0, y);
-			else
-				setDead();
-		}
-		else if (getDirection() == 0)
-		{
-			if (getWorld()->isMovePossible(this, x + 2, y))
-				moveTo(x + 2.0, y);
-			else
-				setDead();
-		}
-
-		if (getWorld()->isMovePossible(this, x, y - 2))
-		{
-			moveTo(x, y - 2.0);
-		}
+		if (getWorld()->isMovePossible(this, x - 2, y))
+			moveTo(x - 2.0, y);
+		else
+			setDead();
 	}
+	else if (getDirection() == 0)
+	{
+		if (getWorld()->isMovePossible(this, x + 2, y))
+			moveTo(x + 2.0, y);
+		else
+			setDead();
+	}
+
+	if (getWorld()->isMovePossible(this, x, y - 2))
+	{
+		moveTo(x, y - 2.0);
+	}
+}
+
+void Goomba::doSomething()
+{
+
 }
